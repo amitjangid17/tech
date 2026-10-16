@@ -1,29 +1,262 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-	<meta charset="utf-8">
-	<title>NAV BAR</title>
-	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;400&display=swap" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="style.css">
-
+<meta charset="utf-8">
+<title>SiteStock – Tools & Machinery</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Track tools & machinery stock availability on site.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<style>
+:root{--bg:#fff;--card:#fff;--soft:#f6f7f9;--ink:#111418;--mute:#737a86;--line:#e9ebef;--pri:#111418;--priD:#111418;--ok:#16a34a;--warn:#d97706;--bad:#dc2626;--blue:#2563eb;--r:14px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+header{position:sticky;top:0;z-index:5;background:#fffffff2;backdrop-filter:blur(8px);color:var(--ink);padding:calc(12px + env(safe-area-inset-top)) 16px 12px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+header h1{font-size:19px;font-weight:700;letter-spacing:-.02em;margin:0;flex:1}
+header button{background:var(--soft);border:0;border-radius:99px;color:inherit;padding:8px 14px;font-size:14px;font-weight:600}
+main{max-width:720px;margin:0 auto;padding:14px 16px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:520px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--soft);border-radius:var(--r);padding:14px}
+.stat b{display:block;font-size:26px}.stat span{color:var(--mute);font-size:13px}
+.bar{display:flex;gap:8px;margin-bottom:10px}
+input,select,textarea{width:100%;font:inherit;color:inherit;background:var(--soft);border-color:transparent !important;border:1px solid var(--line);border-radius:10px;padding:12px}
+textarea{resize:vertical}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px;scrollbar-width:none}
+.chip{flex:none;border:0;background:var(--soft);color:inherit;border-radius:99px;padding:8px 14px;font-size:14px}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.item{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.row{display:flex;gap:10px;align-items:flex-start;justify-content:space-between}
+.item h3{margin:0;font-size:17px}.meta{color:var(--mute);font-size:13px;margin-top:2px}
+.badge{font-size:12px;font-weight:700;border-radius:99px;padding:4px 10px;white-space:nowrap}
+.ok{background:#16a34a14;color:var(--ok)}.low{background:#d9770618;color:var(--warn)}.out{background:#dc262614;color:var(--bad)}
+.meter{height:6px;background:var(--line);border-radius:9px;overflow:hidden;margin:10px 0 6px}
+.meter i{display:block;height:100%;background:var(--ok)}.meter.low i{background:var(--warn)}.meter.out i{background:var(--bad)}
+.nums{display:flex;justify-content:space-between;font-size:14px}
+.acts{display:flex;gap:8px;margin-top:10px}
+.btn{flex:1;border:0;border-radius:10px;padding:12px;font:600 15px inherit;background:var(--soft);color:var(--ink)}
+.btn.p{background:var(--pri);color:#fff}.btn.o{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink)}.btn.d{color:var(--bad)}.btn:disabled{opacity:.4}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fffffff2;backdrop-filter:blur(8px);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:6}
+nav button{flex:1;border:0;background:none;color:var(--mute);padding:10px 0 8px;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:2px}
+nav button span{font-size:20px;filter:grayscale(1);opacity:.7}nav button.on span{opacity:1}nav button.on{color:var(--priD);font-weight:700}
+.fab{position:fixed;right:16px;bottom:calc(84px + env(safe-area-inset-bottom));width:56px;height:56px;border-radius:50%;border:0;background:var(--pri);color:#fff;font-size:28px;font-weight:300;box-shadow:0 4px 16px #0003;z-index:7}
+.sheet-bg{position:fixed;inset:0;background:#0006;z-index:20;display:none;align-items:flex-end;justify-content:center}
+.sheet-bg.show{display:flex}
+.sheet{background:var(--card);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom))}
+.sheet h2{margin:0 0 12px;font-size:19px}
+label{display:block;font-size:13px;color:var(--mute);margin:10px 0 4px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.log{background:var(--soft);border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:14px}
+.log small{color:var(--mute)}
+.empty{text-align:center;color:var(--mute);padding:40px 10px}
+.toast{position:fixed;left:50%;bottom:calc(150px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#111;color:#fff;padding:10px 16px;border-radius:99px;font-size:14px;z-index:30;opacity:0;transition:.2s;pointer-events:none}
+.toast.show{opacity:1}
+.sec{margin:18px 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute)}
+</style>
 </head>
 <body>
-	<nav>
-		<div class="logo">
-			<h4>The Nav</h4>
-		</div>
-		<ul class="nav-links">
-			<li><a href="">Home</a></li>
-			<li><a href="">About Us</a></li>
-			<li><a href="">Projects</a></li>
-			<li><a href="">Contact Us</a></li>
-		</ul>
-		<div class="burger">
-			<div class="line1"></div>
-			<div class="line2"></div>
-			<div class="line3"></div>	
-		</div>	
-	</nav>
+<header><h1>SiteStock</h1><button id="siteBtn">Site: All</button></header>
+<main id="app"></main>
+<button class="fab" id="fab" aria-label="Add item">+</button>
+<nav>
+  <button data-tab="stock" class="on"><span>📦</span>Stock</button>
+  <button data-tab="out"><span>🚚</span>On Site</button>
+  <button data-tab="log"><span>📜</span>History</button>
+  <button data-tab="more"><span>⚙️</span>More</button>
+</nav>
+<div class="sheet-bg" id="bg"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
 
+<script src="firebase-config.js"></script>
+<script>
+const KEY='sitestock.v1';
+const CATS=['Hand Tools','Power Tools','Machinery','Scaffolding','Safety','Electrical','Other'];
+const $=s=>document.querySelector(s);
+const uid=()=>Math.random().toString(36).slice(2,9);
+const ESC={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>ESC[c]);
+function seed(){
+  const mk=(name,cat,total,unit,min,loc)=>({id:uid(),name,cat,total,unit,min,loc,cond:'Good',notes:'',issued:[]});
+  return {sites:['Main Yard','Site A','Site B'],site:'All',
+   items:[mk('Cordless Drill','Power Tools',12,'pcs',3,'Main Yard'),mk('Angle Grinder','Power Tools',8,'pcs',2,'Main Yard'),
+   mk('Excavator JCB 3DX','Machinery',2,'units',1,'Site A'),mk('Concrete Mixer','Machinery',4,'units',1,'Main Yard'),
+   mk('Plate Compactor','Machinery',3,'units',1,'Main Yard'),mk('Scaffold Frame','Scaffolding',120,'pcs',30,'Main Yard'),
+   mk('Safety Helmet','Safety',60,'pcs',20,'Main Yard'),mk('Extension Reel 50m','Electrical',10,'pcs',3,'Main Yard'),
+   mk('Spirit Level 1.2m','Hand Tools',15,'pcs',4,'Main Yard')],log:[]};
+}
+const CLOUD=!!(window.FIREBASE_CONFIG&&window.FIREBASE_CONFIG.apiKey);
+const SITES0=['Main Yard','Site A','Site B'];
+let S,user=null,authReady=!CLOUD,FB=null,subs=[];
+if(CLOUD){let s='All';try{s=localStorage.getItem(KEY+'.site')||'All'}catch(e){}S={sites:SITES0,site:s,items:[],log:[]}}
+else{try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!S||!S.items){S=seed();save()}}
+function save(){try{CLOUD?localStorage.setItem(KEY+'.site',S.site):localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const byId=id=>S.items.find(i=>i.id===id);
+
+/* ---------- data layer: localApi (this device) or cloudApi (shared Firebase) ---------- */
+const localApi={
+ async saveItem(id,d,isNew){if(isNew)S.items.unshift({id,issued:[],...d});else Object.assign(byId(id),d);save()},
+ async deleteItem(id){S.items=S.items.filter(x=>x.id!==id);save()},
+ async issue(id,{site,who,qty}){const i=byId(id);if(qty>avail(i))throw Error('Only '+avail(i)+' available');const date=Date.now();i.issued.push({id:uid(),site,who,qty,date});S.log.unshift({type:'issue',name:i.name,qty,site,who,date});save()},
+ async ret(id,xid,qty){const i=byId(id),x=i.issued.find(y=>y.id===xid);if(!x||qty>x.qty)throw Error('Invalid quantity');x.qty-=qty;if(x.qty<=0)i.issued=i.issued.filter(y=>y!==x);S.log.unshift({type:'return',name:i.name,qty,site:x.site,who:x.who,date:Date.now()});save()},
+ async setSites(l){S.sites=l;save()}
+};
+const cloudApi={
+ async saveItem(id,d,isNew){const {F,fs}=FB;const r=F.doc(fs,'items',id);(isNew?F.setDoc(r,{...d,issued:[]}):F.updateDoc(r,d)).catch(e=>toast(e.message))},
+ async deleteItem(id){const {F,fs}=FB;F.deleteDoc(F.doc(fs,'items',id)).catch(e=>toast(e.message))},
+ async issue(id,{site,who,qty}){const {F,fs}=FB;const r=F.doc(fs,'items',id);let name;
+  await F.runTransaction(fs,async t=>{const s=await t.get(r),it=s.data(),list=it.issued||[],a=it.total-list.reduce((x,y)=>x+y.qty,0);if(qty>a)throw Error('Only '+a+' available now');name=it.name;t.update(r,{issued:[...list,{id:uid(),site,who,qty,date:Date.now()}]})});
+  F.addDoc(F.collection(fs,'log'),{type:'issue',name,qty,site,who,date:Date.now(),by:user.email}).catch(()=>{})},
+ async ret(id,xid,qty){const {F,fs}=FB;const r=F.doc(fs,'items',id);let name,site,who;
+  await F.runTransaction(fs,async t=>{const s=await t.get(r),it=s.data(),list=it.issued||[],x=list.find(y=>y.id===xid);if(!x||qty>x.qty)throw Error('Already returned or invalid quantity');name=it.name;site=x.site;who=x.who;
+   t.update(r,{issued:list.map(y=>y.id===xid?{...y,qty:y.qty-qty}:y).filter(y=>y.qty>0)})});
+  F.addDoc(F.collection(fs,'log'),{type:'return',name,qty,site,who,date:Date.now(),by:user.email}).catch(()=>{})},
+ async setSites(list){const {F,fs}=FB;F.setDoc(F.doc(fs,'meta','sites'),{list}).catch(e=>toast(e.message))}
+};
+const api=CLOUD?cloudApi:localApi;
+async function run(p,msg){try{await p;render();if(msg)toast(msg)}catch(e){toast(e.message||'Something went wrong')}}
+
+async function cloudInit(){
+  try{
+    const b='https://www.gstatic.com/firebasejs/10.12.2/';
+    const [A,F,Au]=await Promise.all([import(b+'firebase-app.js'),import(b+'firebase-firestore.js'),import(b+'firebase-auth.js')]);
+    const app=A.initializeApp(window.FIREBASE_CONFIG);
+    const fs=F.initializeFirestore(app,{localCache:F.persistentLocalCache({tabManager:F.persistentMultipleTabManager()})});
+    const auth=Au.getAuth(app);FB={A,F,Au,fs,auth};
+    Au.onAuthStateChanged(auth,u=>{subs.forEach(f=>f());subs=[];user=u;authReady=true;if(u)listen();render()});
+  }catch(e){authReady=true;$('#app').innerHTML='<div class="empty">Could not connect to the cloud database.<br>Check your internet connection and refresh.</div>'}
+}
+function listen(){
+  const {F,fs}=FB,soft=()=>{if(document.activeElement&&document.activeElement.id==='q')return;render()},err=e=>toast(e.code==='permission-denied'?'No permission – check Firestore rules':e.message);
+  subs.push(F.onSnapshot(F.collection(fs,'items'),s=>{S.items=s.docs.map(d=>({...d.data(),id:d.id,issued:d.data().issued||[]})).sort((a,b)=>a.name.localeCompare(b.name));soft()},err));
+  subs.push(F.onSnapshot(F.doc(fs,'meta','sites'),s=>{S.sites=s.exists()&&s.data().list.length?s.data().list:SITES0;soft()},err));
+  subs.push(F.onSnapshot(F.query(F.collection(fs,'log'),F.orderBy('date','desc'),F.limit(200)),s=>{S.log=s.docs.map(d=>d.data());soft()},err));
+}
+const out=i=>i.issued.reduce((a,x)=>a+x.qty,0);
+const avail=i=>i.total-out(i);
+const state=i=>{const a=avail(i);return a<=0?'out':a<=i.min?'low':'ok'};
+const label={ok:'Available',low:'Low stock',out:'Out of stock'};
+let tab='stock',q='',cat='All';
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800)}
+function open(html){$('#sheet').innerHTML=html;$('#bg').classList.add('show')}
+function close(){$('#bg').classList.remove('show')}
+$('#bg').addEventListener('click',e=>{if(e.target.id==='bg')close()});
+
+function visible(){return S.items.filter(i=>(cat==='All'||i.cat===cat)&&(!q||(i.name+i.loc+i.cat).toLowerCase().includes(q.toLowerCase()))&&(S.site==='All'||i.loc===S.site||i.issued.some(x=>x.site===S.site)))}
+
+function card(i){
+  const st=state(i),a=avail(i),pct=i.total?Math.max(0,a/i.total*100):0;
+  return `<div class="item"><div class="row"><div><h3>${esc(i.name)}</h3><div class="meta">${esc(i.cat)} · 📍 ${esc(i.loc)} · ${esc(i.cond)}</div></div><span class="badge ${st}">${label[st]}</span></div>
+  <div class="meter ${st}"><i style="width:${pct}%"></i></div>
+  <div class="nums"><span><b>${a}</b> available</span><span>${out(i)} on site</span><span>${i.total} total ${esc(i.unit)}</span></div>
+  <div class="acts"><button class="btn o" data-issue="${i.id}" ${a<=0?'disabled':''}>Issue</button><button class="btn" data-ret="${i.id}" ${out(i)<=0?'disabled':''}>Return</button><button class="btn" data-edit="${i.id}">Edit</button></div></div>`}
+
+function render(){
+  $('#siteBtn').textContent='Site: '+S.site;
+  $('#fab').style.display=(tab==='stock'&&(!CLOUD||user))?'block':'none';
+  const A=$('#app');
+  if(CLOUD&&!user){
+    A.innerHTML=authReady?`<div class="item" style="margin-top:20px"><h3>Sign in</h3><p class="meta">Use the email and password your site admin gave you.</p>
+    <label>Email</label><input id="em" type="email" autocomplete="username" inputmode="email">
+    <label>Password</label><input id="pw" type="password" autocomplete="current-password">
+    <div class="acts"><button class="btn p" id="login">Sign in</button></div></div>`:'<div class="empty">Loading…</div>';
+    return}
+  if(tab==='stock'){
+    const it=S.items,tot=it.length,low=it.filter(i=>state(i)==='low').length,o=it.filter(i=>state(i)==='out').length,onsite=it.reduce((a,i)=>a+out(i),0);
+    const list=visible();
+    A.innerHTML=`<div class="stats"><div class="stat"><b>${tot}</b><span>Item types</span></div><div class="stat"><b>${onsite}</b><span>Units on site</span></div><div class="stat"><b style="color:var(--warn)">${low}</b><span>Low stock</span></div><div class="stat"><b style="color:var(--bad)">${o}</b><span>Out of stock</span></div></div>
+    <div class="bar"><input id="q" type="search" placeholder="Search tools & machinery…" value="${esc(q)}"></div>
+    <div class="chips">${['All',...CATS].map(c=>`<button class="chip ${c===cat?'on':''}" data-cat="${c}">${c}</button>`).join('')}</div>
+    ${list.length?list.map(card).join(''):'<div class="empty">No items found.<br>Tap + to add one.</div>'}`;
+    const qi=$('#q');qi.oninput=e=>{q=e.target.value;const p=e.target.selectionStart;render();const n=$('#q');n.focus();n.setSelectionRange(p,p)};
+  }else if(tab==='out'){
+    const rows=[];S.items.forEach(i=>i.issued.forEach(x=>{if(S.site==='All'||x.site===S.site)rows.push({i,x})}));
+    A.innerHTML=`<div class="sec">Currently issued to sites</div>`+(rows.length?rows.map(({i,x})=>`<div class="item"><div class="row"><div><h3>${esc(i.name)}</h3><div class="meta">📍 ${esc(x.site)} · ${esc(x.who||'—')} · since ${new Date(x.date).toLocaleDateString()}</div></div><span class="badge low">${x.qty} ${esc(i.unit)}</span></div><div class="acts"><button class="btn" data-retone="${i.id}|${x.id}">Return</button></div></div>`).join(''):'<div class="empty">Nothing issued out right now.</div>');
+  }else if(tab==='log'){
+    A.innerHTML=`<div class="sec">Activity</div>`+(S.log.length?S.log.slice(0,200).map(l=>`<div class="log"><b>${l.type==='issue'?'➡️ Issued':l.type==='return'?'⬅️ Returned':'✏️ '+l.type}</b> ${esc(l.qty??'')} × ${esc(l.name)}<br><small>${esc(l.site||'')} ${l.who?'· '+esc(l.who):''}${l.by?' · by '+esc(l.by):''} · ${new Date(l.date).toLocaleString()}</small></div>`).join(''):'<div class="empty">No activity yet.</div>');
+  }else{
+    A.innerHTML=`<div class="sec">Sites</div><div class="item">${S.sites.map(s=>`<div class="row" style="padding:6px 0"><span>📍 ${esc(s)}</span><button class="btn d" style="flex:none;padding:6px 12px" data-delsite="${esc(s)}">✕</button></div>`).join('')}
+    <div class="bar" style="margin:10px 0 0"><input id="ns" placeholder="New site name"><button class="btn p" style="flex:none" id="addSite">Add</button></div></div>
+    ${CLOUD?`<div class="sec">Account</div><div class="item"><div class="row" style="align-items:center"><span class="meta" style="margin:0">☁️ Shared live data<br>${esc(user.email)}</span><button class="btn" style="flex:none" id="logout">Sign out</button></div></div>`:''}
+    <div class="sec">Data</div><div class="item"><div class="acts" style="margin:0"><button class="btn" id="exCsv">Export CSV</button><button class="btn" id="exJson">Backup JSON</button></div>
+    ${CLOUD?'<p class="meta">Stock is shared live with everyone signed in.</p>':'<div class="acts"><button class="btn" id="imp">Restore backup</button><button class="btn d" id="reset">Reset</button></div><input type="file" id="file" accept=".json" hidden><p class="meta">Data is stored on this device only. Use Backup to move it elsewhere.</p>'}</div>
+    <div class="sec">Install</div><div class="item meta">Open your browser menu → “Add to Home Screen” to use SiteStock like an app, even offline.</div>`;
+  }
+}
+
+function itemForm(i){
+  const n=!i;i=i||{name:'',cat:CATS[0],total:1,unit:'pcs',min:1,loc:S.sites[0],cond:'Good',notes:''};
+  open(`<h2>${n?'Add item':'Edit item'}</h2>
+  <label>Name</label><input id="f_name" value="${esc(i.name)}" placeholder="e.g. Hilti Drill">
+  <div class="g2"><div><label>Category</label><select id="f_cat">${CATS.map(c=>`<option ${c===i.cat?'selected':''}>${c}</option>`).join('')}</select></div>
+  <div><label>Home location</label><select id="f_loc">${S.sites.map(c=>`<option ${c===i.loc?'selected':''}>${esc(c)}</option>`).join('')}</select></div></div>
+  <div class="g2"><div><label>Total quantity</label><input id="f_total" type="number" inputmode="numeric" min="0" value="${i.total}"></div>
+  <div><label>Unit</label><input id="f_unit" value="${esc(i.unit)}"></div></div>
+  <div class="g2"><div><label>Low-stock alert at</label><input id="f_min" type="number" inputmode="numeric" min="0" value="${i.min}"></div>
+  <div><label>Condition</label><select id="f_cond">${['Good','Needs service','Damaged'].map(c=>`<option ${c===i.cond?'selected':''}>${c}</option>`).join('')}</select></div></div>
+  <label>Notes</label><textarea id="f_notes" rows="2">${esc(i.notes)}</textarea>
+  <div class="acts"><button class="btn" id="cancel">Cancel</button>${n?'':'<button class="btn d" id="del">Delete</button>'}<button class="btn p" id="ok">Save</button></div>`);
+  $('#cancel').onclick=close;
+  if(!n)$('#del').onclick=()=>{if(confirm('Delete '+i.name+'?')){close();run(api.deleteItem(i.id),'Deleted')}};
+  $('#ok').onclick=()=>{
+    const name=$('#f_name').value.trim();if(!name)return toast('Enter a name');
+    const total=Math.max(0,+$('#f_total').value||0);
+    if(!n&&total<out(i))return toast(`${out(i)} units are on site`);
+    const d={name,cat:$('#f_cat').value,loc:$('#f_loc').value,total,unit:$('#f_unit').value.trim()||'pcs',min:Math.max(0,+$('#f_min').value||0),cond:$('#f_cond').value,notes:$('#f_notes').value};
+    close();run(api.saveItem(n?uid():i.id,d,n),'Saved')};
+}
+
+function issueForm(i){
+  open(`<h2>Issue: ${esc(i.name)}</h2><p class="meta">${avail(i)} ${esc(i.unit)} available</p>
+  <label>Send to site</label><select id="s">${S.sites.map(s=>`<option ${s===(S.site!=='All'?S.site:'')?'selected':''}>${esc(s)}</option>`).join('')}</select>
+  <div class="g2"><div><label>Quantity</label><input id="n" type="number" inputmode="numeric" min="1" max="${avail(i)}" value="1"></div>
+  <div><label>Taken by</label><input id="w" placeholder="Name"></div></div>
+  <div class="acts"><button class="btn" id="cancel">Cancel</button><button class="btn p" id="ok">Issue</button></div>`);
+  $('#cancel').onclick=close;
+  $('#ok').onclick=()=>{const qty=+$('#n').value;if(!(qty>=1&&qty<=avail(i)))return toast('Invalid quantity');
+    const site=$('#s').value,who=$('#w').value.trim();
+    close();run(api.issue(i.id,{site,who,qty}),'Issued')};
+}
+function returnForm(i,only){
+  const list=only?[only]:i.issued;
+  open(`<h2>Return: ${esc(i.name)}</h2>
+  <label>From</label><select id="r">${list.map(x=>`<option value="${x.id}">${esc(x.site)} – ${x.qty} ${esc(i.unit)}${x.who?' ('+esc(x.who)+')':''}</option>`).join('')}</select>
+  <label>Quantity returning</label><input id="n" type="number" inputmode="numeric" min="1" value="1">
+  <div class="acts"><button class="btn" id="cancel">Cancel</button><button class="btn p" id="ok">Return</button></div>`);
+  $('#cancel').onclick=close;
+  $('#ok').onclick=()=>{const x=list.find(y=>y.id===$('#r').value),qty=+$('#n').value;if(!x||!(qty>=1&&qty<=x.qty))return toast('Invalid quantity');close();run(api.ret(i.id,x.id,qty),'Returned')};
+}
+
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;
+  const d=t.dataset,find=id=>S.items.find(i=>i.id===id);
+  if(d.tab){tab=d.tab;document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b===t));render();scrollTo(0,0)}
+  else if(d.cat){cat=d.cat;render()}
+  else if(d.issue)issueForm(find(d.issue));
+  else if(d.ret)returnForm(find(d.ret));
+  else if(d.edit)itemForm(find(d.edit));
+  else if(d.retone){const[a,b]=d.retone.split('|'),i=find(a);returnForm(i,i.issued.find(x=>x.id===b))}
+  else if(d.delsite){if(S.sites.length<2)return toast('Keep at least one site');if(S.items.some(i=>i.loc===d.delsite||i.issued.some(x=>x.site===d.delsite)))return toast('Site is in use');if(S.site===d.delsite){S.site='All';save()}run(api.setSites(S.sites.filter(s=>s!==d.delsite)))}
+  else if(t.id==='fab')itemForm();
+  else if(t.id==='siteBtn'){open(`<h2>Filter by site</h2>${['All',...S.sites].map(s=>`<button class="btn ${s===S.site?'p':''}" style="width:100%;margin-bottom:8px" data-pick="${esc(s)}">${esc(s)}</button>`).join('')}`)}
+  else if(d.pick){S.site=d.pick;save();close();render()}
+  else if(t.id==='addSite'){const v=$('#ns').value.trim();if(!v||S.sites.includes(v))return toast('Enter a unique name');run(api.setSites([...S.sites,v]))}
+  else if(t.id==='login'){const em=$('#em').value.trim(),pw=$('#pw').value;if(!em||!pw)return toast('Enter email and password');FB.Au.signInWithEmailAndPassword(FB.auth,em,pw).catch(()=>toast('Wrong email or password'))}
+  else if(t.id==='logout'){FB.Au.signOut(FB.auth)}
+  else if(t.id==='exCsv'){const r=[['Name','Category','Home','Total','On site','Available','Unit','Condition']];S.items.forEach(i=>r.push([i.name,i.cat,i.loc,i.total,out(i),avail(i),i.unit,i.cond]));dl('sitestock.csv','text/csv',r.map(x=>x.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n'))}
+  else if(t.id==='exJson')dl('sitestock-backup.json','application/json',JSON.stringify(S,null,1));
+  else if(t.id==='imp')$('#file').click();
+  else if(t.id==='reset'){if(confirm('Erase all data and reload sample data?')){S=seed();save();render()}}
+});
+document.addEventListener('change',e=>{if(e.target.id==='file'){const f=e.target.files[0];if(!f)return;f.text().then(x=>{try{const j=JSON.parse(x);if(!j.items)throw 0;S=j;save();render();toast('Restored')}catch(_){toast('Invalid backup file')}})}});
+function dl(n,m,c){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:m}));a.download=n;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),999)}
+render();
+if(CLOUD)cloudInit();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
 </body>
 </html>
